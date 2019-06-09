@@ -3,7 +3,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Declined Sent Forms
+        Declined Forms
         <small></small>
       </h1>
       <!-- <ol class="breadcrumb">
@@ -37,55 +37,22 @@
                   
 
                 </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Cleaning Purchase 1</td>
-                  <td>11-7-2014</td>
-                  <td>10:01 AM</td>
-                  <td>James Oladele</td>
-                  <td>Ogie</td>
-                  <td>Pipe 01</td>
-                  <td>James Oladele is an goat thats why you hear</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Cleaning Purchase 1</td>
-                  <td>11-7-2014</td>
-                  <td>10:01 AM</td>
-                  <td>James Oladele</td>
-                  <td>Ogie</td>
-                  <td>Pipe 01</td>
-                  <td>James Oladele is an goat thats why you hear</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Cleaning Purchase 1</td>
-                  <td>11-7-2014</td>
-                  <td>10:01 AM</td>
-                  <td>James Oladele</td>
-                  <td>Ogie</td>
-                  <td>Pipe 01</td>
-                  <td>James Oladele is an goat thats why you hear</td>
-                </tr>
-                <tr>
-                  <td>1</td>
-                  <td>Cleaning Purchase 1</td>
-                  <td>11-7-2014</td>
-                  <td>10:01 AM</td>
-                  <td>James Oladele</td>
-                  <td>Ogie</td>
-                  <td>Pipe 01</td>
-                  <td>James Oladele is an goat thats why you hear</td>
-                <tr>
-                  <td>1</td>
-                  <td>Cleaning Purchase 1</td>
-                  <td>11-7-2014</td>
-                  <td>10:01 AM</td>
-                  <td>James Oladele</td>
-                  <td>Ogie</td>
-                  <td>Pipe 01</td>
-                  <td>James Oladele is an goat thats why you hear</td>
-                </tr>
+                <?php
+                  foreach ($getdeclined->result_array() as $row) {
+                    echo('
+                    <tr>
+                      <td>'.$row['Id'].'</td>
+                      <td>'.$row['FormName'].'</td>
+                      <td>'.$row['Date'].'</td>
+                      <td>'.$row['Time'].'</td>
+                      <td>'.$row['DeclinedBy'].'</td>
+                      <td>'.$row['Creator'].'</td>
+                      <td>'.$row['PipeName'].'</td>
+                      <td>'.$row['Reason'].'</td>
+                    </tr>
+                    ');
+                  }
+                ?>
               </table>
             </div>
             <!-- /.box-body -->

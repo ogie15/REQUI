@@ -4,7 +4,7 @@
     <section class="content-header">
       <h1>
         Dashboard
-        <small>Control panel</small>
+        <!-- <small>Control panel</small> -->
       </h1>
 
     </section>
@@ -12,24 +12,24 @@
     <section class="content">
       <!-- Small boxes (Stat box) -->
       <div class="row" style="padding-bottom:30px;">
-        <a href="<?php echo(base_url()); ?>Req/template">
+        <!-- <a href="<?php echo(base_url()); ?>Req/template">
           <div class="col-lg-3 col-xs-6">
             <!-- small box -->
-            <div class="small-box bg-aqua">
+            <!-- <div class="small-box bg-aqua">
               <div class="inner">
-                <h3>Get</h3>
+                <h3>Templates</h3>
 
-                <p>Template</p>
+                <p>Templates</p>
               </div>
               <div class="icon">
                 <i class="ion ion ion-code-download"></i>
               </div>
             </div>
-          </div>
-        </a>
+          </div> -->
+        <!-- </a> --> 
           <!-- ./col -->
         <a href="<?php echo(base_url()); ?>Req/signed">
-          <div class="col-lg-3 col-xs-6">
+          <div class="col-lg-6 col-xs-12">
             <!-- small box -->
             <div class="small-box bg-green">
               <div class="inner">
@@ -45,7 +45,7 @@
         </a>
           <!-- ./col -->
         <a href="<?php echo(base_url()); ?>Req/received">
-          <div class="col-lg-3 col-xs-6">
+          <div class="col-lg-6 col-xs-12">
             <!-- small box -->
             <div class="small-box bg-yellow">
               <div class="inner">
@@ -60,14 +60,14 @@
           </div>
         </a>
           <!-- ./col -->
-        <a href="<?php echo(base_url()); ?>Req/history">
-          <div class="col-lg-3 col-xs-6">
+        <a href="<?php echo(base_url()); ?>Req/approved">
+          <div class="col-lg-6 col-xs-12">
             <!-- small box -->
             <div class="small-box bg-red">
               <div class="inner">
-                <h3>History</h3>
+                <h3>Approved</h3>
 
-                <p>Of All Signed Forms</p>
+                <p>Requistion Form</p>
               </div>
               <div class="icon">
                 <i class="ion ion-ios-time-outline"></i>
@@ -75,8 +75,9 @@
             </div>
           </div>
         </a>
-      </div>
-      <div class="row" style="padding-bottom:30px;">
+      <!-- </div> -->
+      <!-- the row i removed -->
+      <!-- <div class="row" style="padding-bottom:30px;"> -->
          <!-- ./col -->
         <a href="<?php echo(base_url()); ?>Req/sent">
           <div class="col-lg-6 col-xs-12">

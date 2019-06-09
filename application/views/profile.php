@@ -20,20 +20,23 @@
 
           <!-- Profile Image -->
           <div class="box box-primary">
+          <?php  
+          foreach ($profile->result_array() as $row){
+            echo('
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="<?php echo(base_url()); ?>assets/dist/img/user4-128x128.jpg" alt="User profile picture">
+              <img class="profile-user-img img-responsive img-circle" src="'.base_url().'assets/dist/img/user4-128x128.jpg" alt="User profile picture">
 
-              <h3 class="profile-username text-center">Okougbo Esemuede</h3>
+              <h3 class="profile-username text-center">'.$row['FirstName'].' '.$row['LastName'].'</h3>
 
-              <p class="text-muted text-center">Technology</p>
-              <p class="text-muted text-center">ID 200</p>
+              <p class="text-muted text-center">'.$row['Department'].'</p>
+              <p class="text-muted text-center">'.'ID '.$row['IdNum'].'</p>
 
               <!-- /.box-header -->
               <div class="box-body">
-                <strong><i class="fa fa-book margin-r-5"></i> Team</strong>
+                <strong><i class="fa fa-book margin-r-5"></i>Team</strong>
 
                 <p class="text-muted">
-                  Team Services
+                  '.$row['Team'].'
                 </p>
 
                 <!-- <hr> -->
@@ -61,7 +64,9 @@
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
               </div>
               <!-- /.box-body -->
-
+              ');
+            }
+            ?>
               <!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> -->
             </div>
             <!-- /.box-body -->

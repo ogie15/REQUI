@@ -10,9 +10,9 @@ class Mreq extends CI_Model {
 	}
 
 	// get email from DB
-	function email(){
+	function email($inputEmail){
 		$conn=$this->connect();
-		$values=$conn->query("SELECT `Email` FROM `registration`");
+		$values=$conn->query("SELECT `Email` FROM `registration` WHERE `Email` ='$inputEmail'");
 		return $values;
 	}
 
@@ -45,9 +45,9 @@ class Mreq extends CI_Model {
 	}
 
 	// send to just uploaded DB
-	function upload($formname, $date, $time, $pipename, $uploadedby, $uniqueid, $creator){
+	function upload($formname, $date, $time, $pipename, $uploadedby, $uniqueid, $creator, $wtd, $track){
 		$conn=$this->connect();
-		$values=$conn->query("INSERT INTO `req`.`upload` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UploadedBy`, `UniqueId`, `Creator`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uploadedby', '$uniqueid', '$creator')");
+		$values=$conn->query("INSERT INTO `req`.`upload` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UploadedBy`, `UniqueId`, `Creator`, `Wtd`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uploadedby', '$uniqueid', '$creator', '$wtd', '$track')");
 		return $values;
 	}
 
@@ -73,9 +73,16 @@ class Mreq extends CI_Model {
 	}
 
 	// insert into sent table on DB
-	function intosend($formname, $date, $time, $pipename, $uniqueid, $sentto, $sentby, $creator, $status){
+	function intosend($formname, $date, $time, $pipename, $uniqueid, $sentto, $sentby, $creator, $status, $track){
 		$conn=$this->connect();
-		$values=$conn->query("INSERT INTO `req`.`sent`(`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `SentTo`, `SentBy`, `Creator`, `Status`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$sentto', '$sentby', '$creator', '$status')");
+		$values=$conn->query("INSERT INTO `req`.`sent`(`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `SentTo`, `SentBy`, `Creator`, `Status`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$sentto', '$sentby', '$creator', '$status', '$track')");
+		return $values;
+	}
+
+	// insert into received table on DB
+	function intoreceived($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $wtd, $track){
+		$conn=$this->connect();
+		$values=$conn->query("INSERT INTO `req`.`received`(`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `ReceivedBy`, `SentBy`, `Creator`, `Status`, `Wtd`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$receivedby', '$sentby', '$creator', '$status', '$wtd', '$track')");
 		return $values;
 	}
 
@@ -87,16 +94,16 @@ class Mreq extends CI_Model {
 	}
 
 	// insert into pipe__ ?? table in DB
-	function intounpipe($pipename, $creator, $Fromwho, $towho, $uniqueid, $status){
+	function intounpipe($pipename, $creator, $Fromwho, $towho, $uniqueid, $status, $track){
 		$conn=$this->connect();
-		$values=$conn->query("INSERT INTO `req`.`$pipename`(`Id`, `Creator`, `FromWho`, `ToWho`, `UniqueId`, `Status`) VALUES (NULL, '$creator', '$Fromwho', '$towho', '$uniqueid', '$status')");
+		$values=$conn->query("INSERT INTO `req`.`$pipename`(`Id`, `Creator`, `FromWho`, `ToWho`, `UniqueId`, `Status`, `Track`) VALUES (NULL, '$creator', '$Fromwho', '$towho', '$uniqueid', '$status', '$track')");
 		return $values;
 	}
 
 	// get all user on DB info
-	function getuserinfo(){
+	function getuserinfo($email){
 		$conn=$this->connect();
-		$values=$conn->query("SELECT `FirstName`, `LastName`, `Department`, `Email`, `ProfilePic`, `OnlineP` FROM `registration`");
+		$values=$conn->query("SELECT `FirstName`, `LastName`, `Department`, `Email`, `ProfilePic`, `OnlineP` FROM `registration` WHERE `Email` <> '$email'");
 		return $values;
 		
 	}
@@ -104,7 +111,7 @@ class Mreq extends CI_Model {
 	// get form details from uploads table with unique id
 	function getformdetails($uniqueid, $uploadedby){
 		$conn=$this->connect();
-		$values=$conn->query("SELECT `PipeName`, `Creator`, `FormName` FROM `Upload` WHERE `UniqueId` = '$uniqueid' AND `UploadedBy` = '$uploadedby'");
+		$values=$conn->query("SELECT `PipeName`, `Creator`, `FormName`, `Wtd`, `Track` FROM `Upload` WHERE `UniqueId` = '$uniqueid' AND `UploadedBy` = '$uploadedby'");
 		return $values;
 	}
 
@@ -119,6 +126,139 @@ class Mreq extends CI_Model {
 	function getpipeformname($uniqueid, $uploadedby){
 		$conn=$this->connect();
 		$values=$conn->query("SELECT `PipeName`, `FormName` FROM `Upload` WHERE `UniqueId` = '$uniqueid' AND `UploadedBy` = '$uploadedby'");
+		return $values;
+	}
+
+	// get info of received data from received table using received by 
+	function getreceived($receivedby){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT * FROM `req`.`received` WHERE `ReceivedBy` = '$receivedby'");
+		return $values;
+	}
+
+	// update status of form for sent table
+	function updatestat($status, $uniqueid, $sentto){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `sent` SET `Status` = '$status' WHERE `UniqueId` = '$uniqueid' AND `SentTo` = '$sentto'");
+		return $values;
+	}
+
+	// update status of form for received table
+	function updatestat_r($status, $uniqueid, $receivedby){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `received` SET `Status` = '$status' WHERE `UniqueId` = '$uniqueid' AND `ReceivedBy` = '$receivedby'");
+		return $values;
+	}
+
+	// update status on pipe table
+	function updatepipestat($pipename, $status, $uniqueid, $towho){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `$pipename` SET `Status` = '$status' WHERE `UniqueId` = '$uniqueid' AND `ToWho` = '$towho'");
+		return $values;
+	}
+
+	// get pipename from received table for particular unique id
+	function receievedpipe($uniqueid, $receivedby){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT `PipeName` FROM `req`.`received` WHERE `UniqueId` = '$uniqueid' AND `ReceivedBy` = '$receivedby'");
+		return $values;
+	}
+
+	// insert into approved table
+	function approvedtable($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track){
+		$conn=$this->connect();
+		$values=$conn->query("INSERT INTO `req`.`approved` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `ApprovedBy`, `SentBy`, `Creator`, `Status`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$receivedby', '$sentby', '$creator', '$status', '$track')");
+		return $values;
+	}
+
+	//get info of received data from received table using unique id
+	function getreceiveduid($uniqueid){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT `FormName`, `Creator`, `SentBy` ,`Track` FROM `req`.`received` WHERE `UniqueId` = '$uniqueid'");
+		return $values;
+	}
+
+	//get approved status from aprroved table
+	// function getapprovedstat($uniqueid, $receivedby){
+	// 	$conn=$this->connect();
+	// 	$values=$conn->query("SELECT `Status` FROM `req`.`approved` WHERE `UniqueId` = '$uniqueid' AND `ApprovedBy` = '$receivedby'");
+	// 	return $values;
+	// }
+
+	// get approved data from DB 
+	function approved($receivedby){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT * FROM `req`.`approved` WHERE `ApprovedBy` = '$receivedby'");
+		return $values;
+	}
+
+	//get profile details from DB
+	function profile($email){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT `FirstName`,`LastName`,`Department`,`Team`,`IdNum`,`ProfilePic`,`OnlineP` FROM `req`.`registration` WHERE `Email` = '$email'");
+		return $values;
+	}
+
+	// send details to declined table
+	function ideclined($formname, $date, $time, $pipename, $declinedby, $declinedto, $uniqueid, $reason, $creator, $status, $track){
+		$conn=$this->connect();
+		$values=$conn->query("INSERT INTO `req`.`declined` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `DeclinedBy`, `DeclinedTo`, `UniqueId`, `Reason`, `Creator`, `Status`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$declinedby', '$declinedto', '$uniqueid', '$reason', '$creator', '$status', '$track')");
+		return $values;
+	}
+
+	//get all from declined table
+	function getdeclined($declinedby){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT * FROM `req`.`declined` WHERE `DeclinedBy` = '$declinedby'");
+		return $values;
+	}
+
+	// get from received where uniqueID is given
+	function ureceived($uniqueid){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT * FROM `req`.`received` WHERE `UniqueId` = '$uniqueid'");
+		return $values;
+	}
+
+	// get the creator information from the pipe table
+	function getunpipe($pipename, $towho){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT `Creator`, `Track` FROM `req`.`$pipename` WHERE `ToWho` = '$towho'");
+		return $values;
+	}
+
+	// delete from specific pipe table 
+	function delunpipe($pipename,$track){
+		$conn=$this->connect();
+		$values=$conn->query("DELETE FROM `req`.`$pipename` WHERE `Track` = '$track'");
+		return $values;
+	}
+
+	// update status of form for sent table for done
+	function nupdatestat($status, $track){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `sent` SET `Status` = '$status'WHERE `Track` = '$track'");
+		return $values;
+	}
+
+	// update status of form for received table for done
+	function nupdatestat_r($status, $track){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `received` SET `Status` = '$status' WHERE `Track` = '$track'");
+		return $values;
+	}
+
+	// select all form specific pipe table
+	function allspipe($pipename){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT * FROM `req`.`$pipename`");
+		return $values;
+	}
+
+	// to check if the pipe belong to you for sending
+	function ifitsforu($pipename){
+		$conn=$this->connect();
+		$values=$conn->query("SELECT `ToWho` FROM `$pipename` ORDER BY `Id` DESC");
 		return $values;
 	}
 }
