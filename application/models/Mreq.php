@@ -237,7 +237,7 @@ class Mreq extends CI_Model {
 	// update status of form for sent table for done
 	function nupdatestat($status, $track){
 		$conn=$this->connect();
-		$values=$conn->query("UPDATE `sent` SET `Status` = '$status'WHERE `Track` = '$track'");
+		$values=$conn->query("UPDATE `sent` SET `Status` = '$status' WHERE `Track` = '$track'");
 		return $values;
 	}
 
@@ -245,6 +245,13 @@ class Mreq extends CI_Model {
 	function nupdatestat_r($status, $track){
 		$conn=$this->connect();
 		$values=$conn->query("UPDATE `received` SET `Status` = '$status' WHERE `Track` = '$track'");
+		return $values;
+	}
+
+	// update status of form for received table for done
+	function nupdatestat_rr($status, $wtd, $track){
+		$conn=$this->connect();
+		$values=$conn->query("UPDATE `received` SET `Status` = '$status', `Wtd` = '$wtd' WHERE `Track` = '$track'");
 		return $values;
 	}
 
@@ -259,6 +266,13 @@ class Mreq extends CI_Model {
 	function ifitsforu($pipename){
 		$conn=$this->connect();
 		$values=$conn->query("SELECT `ToWho` FROM `$pipename` ORDER BY `Id` DESC");
+		return $values;
+	}
+
+	// insert into final table
+	function final($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track){
+		$conn=$this->connect();
+		$values=$conn->query("INSERT INTO `req`.`final` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `ApprovedBy`, `SentBy`, `Creator`, `Status`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$receivedby', '$sentby', '$creator', '$status', '$track')");
 		return $values;
 	}
 }

@@ -326,7 +326,6 @@
           location.reload(true);
         }
       );
-      
     }
 
     // delete form upload table
