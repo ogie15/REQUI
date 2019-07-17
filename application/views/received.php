@@ -40,35 +40,65 @@
                 </tr>
                 <?php 
                 foreach ($received->result_array() as $row) {   
-                  if($row['Wtd'] == "C"){
+                  if($row['Wtd'] == "C" && $row['Status'] == "Pending"){
                     echo('
-                    <tr>
-                      <td>'.$row['Id'].'</td>
-                      <td>'.$row['FormName'].'</td>
-                      <td>'.$row['Date'].'</td>
-                      <td>'.$row['Time'].'</td>
-                      <td>'.$row['SentBy'].'</td>
-                      <td>'.$row['Creator'].'</td>
-                      <td>'.$row['PipeName'].'</td>
-                      <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
-                      <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
-                      <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-success"><span id="appr">Approve & Close</span></a></td>
-                    </tr>
-                  '); 
+                      <tr>
+                        <td>'.$row['Id'].'</td>
+                        <td>'.$row['FormName'].'</td>
+                        <td>'.$row['Date'].'</td>
+                        <td>'.$row['Time'].'</td>
+                        <td>'.$row['SentBy'].'</td>
+                        <td>'.$row['Creator'].'</td>
+                        <td>'.$row['PipeName'].'</td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
+                        <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
+                        <td><a href="" onclick="senduidP('.'\''.$row['UniqueId'].'\''.','.'\''.$row['PipeName'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-final"><span id="appr">Approve & Close</span></a></td>
+                      </tr>
+                    '); 
+                  }elseif($row['Wtd'] == "C" && $row['Status'] == "Declined"){
+                    echo('
+                      <tr>
+                        <td>'.$row['Id'].'</td>
+                        <td>'.$row['FormName'].'</td>
+                        <td>'.$row['Date'].'</td>
+                        <td>'.$row['Time'].'</td>
+                        <td>'.$row['SentBy'].'</td>
+                        <td>'.$row['Creator'].'</td>
+                        <td>'.$row['PipeName'].'</td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
+                        <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-success"><span id="appr">Approve & Close</span></a></td>
+                      </tr>
+                    '); 
+                  }elseif($row['Wtd'] == "F"){
+                    echo('
+                      <tr>
+                        <td>'.$row['Id'].'</td>
+                        <td>'.$row['FormName'].'</td>
+                        <td>'.$row['Date'].'</td>
+                        <td>'.$row['Time'].'</td>
+                        <td>'.$row['SentBy'].'</td>
+                        <td>'.$row['Creator'].'</td>
+                        <td>'.$row['PipeName'].'</td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
+                        <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-success"><span id="appr">COMPLETED</span></a></td>
+                      </tr>
+                    '); 
                   }else{
                     echo('
-                    <tr>
-                      <td>'.$row['Id'].'</td>
-                      <td>'.$row['FormName'].'</td>
-                      <td>'.$row['Date'].'</td>
-                      <td>'.$row['Time'].'</td>
-                      <td>'.$row['SentBy'].'</td>
-                      <td>'.$row['Creator'].'</td>
-                      <td>'.$row['PipeName'].'</td>
-                      <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
-                      <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
-                      <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-success"><span id="appr">Approve</span></a></td>
-                    </tr>
+                      <tr>
+                        <td>'.$row['Id'].'</td>
+                        <td>'.$row['FormName'].'</td>
+                        <td>'.$row['Date'].'</td>
+                        <td>'.$row['Time'].'</td>
+                        <td>'.$row['SentBy'].'</td>
+                        <td>'.$row['Creator'].'</td>
+                        <td>'.$row['PipeName'].'</td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-danger btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-danger"><span>Decline</span></a></td>
+                        <td><button onclick="dLoad('.'\''.$row['FormName'].'\''.')" class="btn bg-orange btn-sm">Download</buttonn></td>
+                        <td><a href="" onclick="senduid('.'\''.$row['UniqueId'].'\''.')" type="button" class="btn btn-success btn bg-olive  btn-sm" data-toggle="modal" data-target="#modal-success"><span id="appr">Approve</span></a></td>
+                      </tr>
                     ');
                   }           
                 }  
@@ -158,6 +188,45 @@
     <!-- /.modal -->
     <!-- /.modal for Approve -->
 
+    <!-- modal for Approve and close-->
+    <div class="modal modal-success fade" id="modal-final">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" style="color: #fff;">Approve & Close</h4>
+          </div>
+          <div class="modal-body">
+            <!-- form start -->
+            <form role="form" action="<?php echo(base_url()); ?>Req/fupload" method="post" enctype="multipart/form-data">
+                
+                  <div class="form-group">
+                    <label for="exampleInputFile">Upload a PDF</label>
+                    <input type="file" name="spdf" id="exampleInputFile">
+                  </div>
+                
+                <!-- /.box-body -->
+                <!-- <div id=checker3 class="box-footer">
+                  <button id=check3 type="submit" class="btn btn-primary">Submit</button>
+                </div> -->  
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">No</button>
+            <!-- <button onclick="approvestat()" type="submit" class="btn btn-outline">Yes</button> -->
+            <button type="submit" class="btn btn-outline">Yes</button>
+          </div>
+          </form>
+              <!-- form end -->
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- /.modal for Approve and close-->
+
     </section>
     <!-- /.content -->
   </div>
@@ -168,6 +237,21 @@
     function senduid(uniqueid){
       $.post("<?php echo(base_url()); ?>Req/senduid",
         {"uniqueid": uniqueid},
+        function(data, status){
+          console.log("Data: " + data + "\nStatus: " + status);
+        }
+      );
+    }
+
+    // collect and send unique id of form to be sent
+    function senduidP(uniqueid,pipename){
+      console.log(uniqueid+"\n"+pipename);
+      
+      $.post("<?php echo(base_url()); ?>Req/senduidP",
+        {
+          "uniqueid": uniqueid,
+          "pipename": pipename
+        },
         function(data, status){
           console.log("Data: " + data + "\nStatus: " + status);
         }
@@ -194,7 +278,6 @@
           console.log(data);
         }
       );
-      
     }
 
     // download for received

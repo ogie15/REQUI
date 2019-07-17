@@ -24,7 +24,16 @@
           foreach ($profile->result_array() as $row){
             echo('
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="'.base_url().'assets/dist/img/user4-128x128.jpg" alt="User profile picture">
+             
+              
+            <form role="form" action="'.base_url().'Req/picture" method="post" enctype="multipart/form-data">
+              <a href="#">
+                <input type="file" name="spic" id="uploader1" style="display:none"/>
+                <img onclick=uploader2() class="profile-user-img img-responsive img-circle" src="'.base_url().'pdf/ppicture/'.$row['ProfilePic'].'" alt="User profile picture"> 
+                <button id="sender" type="submit" style="display:none"> </button>
+              </a>
+            </form> 
+              
 
               <h3 class="profile-username text-center">'.$row['FirstName'].' '.$row['LastName'].'</h3>
 
@@ -81,3 +90,23 @@
     </section>
     <!-- /.content -->
   </div>
+
+<script>
+  function uploader2()
+  {
+    document.getElementById("uploader1").click();
+    console.log("working2");
+  }
+  document.getElementById("uploader1").addEventListener(
+    "change", function(){
+      if(document.getElementById("uploader1").value)
+      {
+        document.getElementById("sender").click();
+        console.log("working");
+      }
+    }
+  );
+  
+
+
+</script>
