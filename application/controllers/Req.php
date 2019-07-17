@@ -862,11 +862,194 @@ class Req extends CI_Controller {
 		}
 	}
 
+// close form upload controller.....................................................................................
+	function fupload(){
+		// check login status
+		if(isset($_SESSION['loginStatus'])){
+			if($_SESSION['loginStatus'] == "on"){
+				// check if cookie is set
+				if(isset($_COOKIE['sankoreR'])){
+					// get cookie value
+					$cookieValue = get_cookie('sankoreR');
+					// check if session is set
+					if(isset($_SESSION[$cookieValue])){
+						// load modal
+						$this->load->model('Mreq');
+						// get pip name from form
+						$pipename = $_SESSION['pipename'];
+						// get data to know if pipe belongs to you
+						$ifitsforu = $this->Mreq->ifitsforu($pipename);
+						if(isset($ifitsforu->result_array()[0]['ToWho'])){
+							$answer = $ifitsforu->result_array()[0]['ToWho'];
+							if ($answer==$_SESSION[$cookieValue]){
+								// load string helper
+								$this->load->helper('string');
+								// load date helper
+								$this->load->helper('date');
+								// WTD (what to do)
+								$wtd = "F";
+								// uploded by
+								$uploadedby = $towho = $_SESSION[$cookieValue];
+								// get creator
+								$ccreator = $this->Mreq->getunpipe($pipename, $towho);
+								$creator = $ccreator->result_array()[0]['Creator'];
+								// create unique id
+								$uniqueid = random_string('md5',16);
+								// set track
+								$track = $ccreator->result_array()[0]['Track'];
+								// date
+								$datestring1 = '%Y/%m/%d';
+								// time
+								$datestring2 = '%h:%i %a';
+								$time = time();
+								$date = mdate($datestring1, $time);
+								$time = mdate($datestring2, $time);
+								// pdf uploader
+								$config['upload_path']          = './pdf/jupload/';
+								$config['detect_mime']        	= TRUE;
+								$config['file_ext_tolower']		= TRUE;
+								$config['remove_spaces']		= TRUE;
+								$config['allowed_types']        = 'pdf';
+								$config['max_size']             = 60000;
+								$this->load->library('upload', $config);
+								// if upload fails
+								if ( ! $this->upload->do_upload('spdf'))
+								{
+									echo ($this->upload->display_errors());
+								}
+								// if upload works
+								else
+								{	
+									// update pipe in use on DB
+									$this->Mreq->upipeinuse($pipename);
+									$data1 = $this->upload->data('raw_name');
+									$data2 = $this->upload->data('full_path');
+									$formname = $data3 = $this->upload->data('file_name');
+									$data4 = $this->upload->data('file_path');
+
+									//update status to approved controller
+									$cookieValue = get_cookie('sankoreR');
+									// sentto is the name of logged in user
+									$sentto = $receivedby = $towho = $_SESSION[$cookieValue];
+									// unique id is 
+									$uniqueid = $_SESSION['uniqueid'];
+									if ($uniqueid != " "){
+										// get pipe name to use on pipe table model
+										//$pipename = $this->Mreq->receievedpipe($uniqueid, $receivedby);
+										//$pipename = $pipename->result_array()[0]['PipeName'];
+										
+										// get received details from DB where unique id is given
+										$getreceiveduid = $this->Mreq->getreceiveduid($uniqueid);
+										// form name
+										$formname = $getreceiveduid->result_array()[0]['FormName'];
+										// creator
+										$creator = $getreceiveduid->result_array()[0]['Creator'];
+										// // sent by 
+										$sentby = $getreceiveduid->result_array()[0]['SentBy'];
+										// track
+										$track = $getreceiveduid->result_array()[0]['Track'];
+										// load date helper
+										$this->load->helper('date');
+										// date
+										$datestring1 = '%Y/%m/%d';
+										// time
+										//$datestring2 = '%h:%i %a';
+										//$time = time();
+										//$date = mdate($datestring1, $time);
+										//$time = mdate($datestring2, $time);	
+										// update approved table on DB
+										if (isset($sentby) OR isset($creator) OR isset($formname)){
+											// $stats = $this->Mreq->getapprovedstat($uniqueid, $receivedby);
+											// get all data with this uniqueID
+											$ureceived = $this->Mreq->ureceived($uniqueid);
+											// check status
+											$cstatus = $ureceived->result_array()[0]['Status'];
+											// check wtd status if its N or E or C
+											$wtdCheck = $ureceived->result_array()[0]['Wtd'];
+											// echo($cstatus);
+											if($cstatus == "Approved"){
+												echo "Approved";
+											}elseif($cstatus == "Declined") {
+												echo("Declined");
+											}elseif($cstatus == "DONE"){
+												echo("Finished");
+											}elseif($cstatus == "Pending"){
+												if($wtdCheck == "C"){
+													// WTD (what to do)
+													$wtd = "F";
+													// status is approved
+													$status = 'DONE';
+													//update and send details to model for sent table 
+													$this->Mreq->nupdatestat($status, $track);
+													//update and send details to model for received table
+													$this->Mreq->nupdatestat_rr($status, $wtd, $track);
+													// //update and send details to model for pipe table 
+													// $this->Mreq->updatepipestat($pipename, $status, $uniqueid, $towho);
+													// delete from specific pipe table 
+													$this->Mreq->delunpipe($pipename,$track);
+													// update pipe in use on DB to not in use
+													$this->Mreq->upipenotinuse($pipename);
+													// insert into appoved table
+													$this->Mreq->approvedtable($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track);
+													// insert into final table
+													$this->Mreq->final($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track);
+													echo "Done";
+												}
+											}
+										}else{
+											echo "failed";
+										}
+									}else{
+										echo "failed";
+									}
+
+
+									// send to upload model
+									//$this->Mreq->upload($formname, $date, $time, $pipename, $uploadedby, $uniqueid, $creator, $wtd, $track);
+									// reload signed page
+									redirect(base_url().'/Req/received');
+								}
+							}else{
+								echo("Not meant for you");
+								// reload signed page
+								// redirect(base_url().'/Req/signed');
+							}	
+						}else{
+							echo("Custom Error Empty");
+						}
+					}else{
+						echo "session email not set";
+						$this->load->view('login');
+					}
+				}else{
+					echo "cookie not set";
+					$this->load->view('login');
+				}
+			}else{
+				echo "loginstatus is off";
+				$this->load->view('login');
+			}	
+		}else{
+			echo "loginstatus not set";
+			$this->load->view('login');
+		}
+	}
+
 // get unique id from view and throw it here to the controller
 	function senduid(){
 		$uniqueid = $_POST['uniqueid'];
 		$_SESSION['uniqueid'] = $uniqueid;
 		echo($uniqueid);
+	}
+
+// get unique id and pipename from view and throw it here to the controller
+	function senduidP(){
+		$uniqueid = $_POST['uniqueid'];
+		$_SESSION['uniqueid'] = $uniqueid;
+		
+		$pipename = $_POST['pipename'];
+		$_SESSION['pipename'] = $pipename;
+		echo($uniqueid."\n".$pipename);
 	}
 
 // get who form is been sent to and update sent table
@@ -1025,23 +1208,23 @@ class Req extends CI_Controller {
 				}elseif($cstatus == "DONE"){
 					echo("Finished");
 				}elseif($cstatus == "Pending"){
-					if($wtd == "C"){
-						// status is approved
-						$status = 'DONE';
-						//update and send details to model for sent table 
-						$this->Mreq->nupdatestat($status, $track);
-						//update and send details to model for received table
-						$this->Mreq->nupdatestat_r($status, $track);
-						// //update and send details to model for pipe table 
-						// $this->Mreq->updatepipestat($pipename, $status, $uniqueid, $towho);
-						// delete from specific pipe table 
-						$this->Mreq->delunpipe($pipename, $towho, $creator, $track);
-						// update pipe in use on DB to not in use
-						$this->Mreq->upipenotinuse($pipename);
-						// insert into appoved table
-						$this->Mreq->approvedtable($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track);
-						echo "Done";
-					}else{
+					// if($wtd == "C"){
+					// 	// status is approved
+					// 	$status = 'DONE';
+					// 	//update and send details to model for sent table 
+					// 	$this->Mreq->nupdatestat($status, $track);
+					// 	//update and send details to model for received table
+					// 	$this->Mreq->nupdatestat_r($status, $track);
+					// 	// //update and send details to model for pipe table 
+					// 	// $this->Mreq->updatepipestat($pipename, $status, $uniqueid, $towho);
+					// 	// delete from specific pipe table 
+					// 	$this->Mreq->delunpipe($pipename, $towho, $creator, $track);
+					// 	// update pipe in use on DB to not in use
+					// 	$this->Mreq->upipenotinuse($pipename);
+					// 	// insert into appoved table
+					// 	$this->Mreq->approvedtable($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track);
+					// 	echo "Done";
+					// }else{
 						// status is approved
 						$status = 'Approved';
 						//update and send details to model for sent table 
@@ -1053,7 +1236,7 @@ class Req extends CI_Controller {
 						// insert into appoved table
 						$this->Mreq->approvedtable($formname, $date, $time, $pipename, $uniqueid, $receivedby, $sentby, $creator, $status, $track);	
 						echo "Done";
-					}
+					// }
 				}
 			}else{
 				echo "failed";
@@ -1157,7 +1340,86 @@ class Req extends CI_Controller {
 		};
 	}
 
-
+//picture or profile picture 
+	function picture(){
+		echo "am working well";
+		// check login status
+		if(isset($_SESSION['loginStatus'])){
+			if($_SESSION['loginStatus'] == "on"){
+				// check if cookie is set
+				if(isset($_COOKIE['sankoreR'])){
+					// get cookie value
+					$cookieValue = get_cookie('sankoreR');
+					// check if session is set
+					if(isset($_SESSION[$cookieValue])){
+						// load modal
+						$this->load->model('Mreq');
+						// load string helper
+						$this->load->helper('string');
+						// load date helper
+						// $this->load->helper('date');
+						// get pipe name from form
+						//$pipename = $_POST['pipe'];
+						// WTD (what to do)
+						//$wtd = "N";
+						// get email 
+						$email = $_SESSION[$cookieValue];
+						// $_POST['uemail'];
+						// create unique id
+						//$uniqueid = random_string('md5',16);
+						// set track
+						//$track = random_string('md5',22);
+						// date
+						//$datestring1 = '%Y/%m/%d';
+						// time
+						//$datestring2 = '%h:%i %a';
+						//$time = time();
+						//$date = mdate($datestring1, $time);
+						//$time = mdate($datestring2, $time);
+						// pdf uploader
+						$config['upload_path']          = './pdf/ppicture/';
+						$config['detect_mime']        	= TRUE;
+						$config['file_ext_tolower']		= TRUE;
+						$config['remove_spaces']		= TRUE;
+				        $config['allowed_types']        = 'jpg|jpeg|png|gif';
+				        $config['max_size']             = 60000;
+				        $this->load->library('upload', $config);
+				        // if upload fails
+				        if ( ! $this->upload->do_upload('spic'))
+							{
+								echo ($this->upload->display_errors());
+				        }
+				        // if upload works
+				        else
+				    		{	
+				    			// update pipe in use on DB
+								$this->Mreq->upipeinuse($pipename);
+		            				 		$data1 = $this->upload->data('raw_name');
+							            	$data2 = $this->upload->data('full_path');
+				            	$picDir = $data3 = $this->upload->data('file_name');
+							            	$data4 = $this->upload->data('file_path');
+							    // send to upload model
+				            	$this->Mreq->pic($picDir, $email);
+				            	// reload signed page
+				            	redirect(base_url().'/Req/profile');
+				        }
+			        }else{
+						echo "session email not set";
+						$this->load->view('login');
+					}
+				}else{
+					echo "cookie not set";
+					$this->load->view('login');
+				}
+			}else{
+				echo "loginstatus is off";
+				$this->load->view('login');
+			}	
+		}else{
+			echo "loginstatus not set";
+			$this->load->view('login');
+		}
+	}
 // // what to do function( get value of what to set approve in document of recieved portal)
 	// function wtd(){
 	// 		// load modal
