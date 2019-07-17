@@ -275,12 +275,5 @@ class Mreq extends CI_Model {
 		$values=$conn->query("INSERT INTO `req`.`final` (`Id`, `FormName`, `Date`, `Time`, `PipeName`, `UniqueId`, `ApprovedBy`, `SentBy`, `Creator`, `Status`, `Track`) VALUES (NULL, '$formname', '$date', '$time', '$pipename', '$uniqueid', '$receivedby', '$sentby', '$creator', '$status', '$track')");
 		return $values;
 	}
-
-	// to upload Profile Picture
-	function pic($picDir, $email){
-		$conn=$this->connect();
-		$values=$conn->query("UPDATE `registration` SET `ProfilePic` = '$picDir' WHERE `Email` = '$email'");
-		return $values;
-	}
 }
 ?>
